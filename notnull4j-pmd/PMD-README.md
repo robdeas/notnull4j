@@ -46,7 +46,7 @@ plugins {
 }
 
 pmd {
-    toolVersion = '7.0.0'
+    toolVersion = '7.21.0'
     ruleSetFiles = files("config/pmd/notnull4j-ruleset.xml")
 }
 

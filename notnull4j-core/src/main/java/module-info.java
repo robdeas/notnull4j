@@ -20,6 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+/**
+ * Provides the NotNull4J core utilities for runtime null-safety enforcement.
+ *
+ * <p>This module contains the primary {@code NotNull} engine and associated
+ * annotations for defensive programming in Java 11+ environments.</p>
+ *
+ * @since 0.1.0
+ */
 module tech.robd.notnull {
     requires transitive org.jspecify;
     requires org.slf4j;

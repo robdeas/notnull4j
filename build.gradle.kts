@@ -3,7 +3,6 @@ plugins {
     `maven-publish` apply true
 }
 
-
 allprojects {
     group = "tech.robd"
     version = "1.0.0"

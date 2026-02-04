@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
-    pmd
+     pmd
 }
 
 group = "tech.robd"

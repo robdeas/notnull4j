@@ -104,8 +104,10 @@ public final class NotNull {
     // Normalisation helpers (iteration / concatenation safety)
     // =====================================================================================
 
-    /** * GRACEFUL — returns an unmodifiable empty list if null.
-     * * @param list the potentially null list
+    /**
+     * GRACEFUL — returns an unmodifiable empty list if null.
+     *
+     * @param list the potentially null list
      * @param <T> the type of elements
      * @return the provided list if non-null, or {@link List#of()}
      */
@@ -114,8 +116,10 @@ public final class NotNull {
         return (list != null) ? list : List.of();
     }
 
-    /** * GRACEFUL — returns an unmodifiable empty set if null.
-     * * @param set the potentially null set
+    /**
+     * GRACEFUL — returns an unmodifiable empty set if null.
+     *
+     * @param set the potentially null set
      * @param <T> the type of elements
      * @return the provided set if non-null, or {@link Set#of()}
      */
@@ -124,8 +128,10 @@ public final class NotNull {
         return (set != null) ? set : Set.of();
     }
 
-    /** * GRACEFUL — returns an unmodifiable empty map if null.
-     * * @param map the potentially null map
+    /**
+     * GRACEFUL — returns an unmodifiable empty map if null.
+     *
+     * @param map the potentially null map
      * @param <K> the type of keys
      * @param <V> the type of values
      * @return the provided map if non-null, or {@link Map#of()}
@@ -135,8 +141,10 @@ public final class NotNull {
         return (map != null) ? map : Map.of();
     }
 
-    /** * GRACEFUL — returns empty string if null.
-     * * @param str the potentially null string
+    /**
+     * GRACEFUL — returns empty string if null.
+     *
+     * @param str the potentially null string
      * @return the provided string if non-null, otherwise an empty string
      */
     @NonNull
@@ -148,8 +156,10 @@ public final class NotNull {
     // Nullable value policies
     // =====================================================================================
 
-    /** * GRACEFUL — use default if null (common business logic).
-     * * @param value the potentially null value
+    /**
+     * GRACEFUL — use default if null (common business logic).
+     *
+     * @param value the potentially null value
      * @param defaultValue the non-null fallback
      * @param <T> the value type
      * @return the value or the default
@@ -251,8 +261,10 @@ public final class NotNull {
         }
     }
 
-    /** * FAIL-FAST — throw if null (assertions / invariants).
-     * * @param value the potentially null value
+    /**
+     * FAIL-FAST — throw if null (assertions / invariants).
+     *
+     * @param value the potentially null value
      * @param <T> the value type
      * @return the non-null value
      * @throws NullPointerException if value is null
@@ -266,8 +278,10 @@ public final class NotNull {
         return value;
     }
 
-    /** * FAIL-FAST — throw if null with message.
-     * * @param value the potentially null value
+    /**
+     * FAIL-FAST — throw if null with message.
+     *
+     * @param value the potentially null value
      * @param message the exception message
      * @param <T> the value type
      * @return the non-null value
@@ -294,17 +308,17 @@ public final class NotNull {
      * is non-null, this performs a runtime check to defend against reflection abuse,
      * serialization bugs, or raw types.
      *
-     * <h3>Example Usage</h3>
+     * <p><strong>Example Usage</strong></p>
      * <pre>{@code
      * public void processUser(@NonNull User user) {
      * // Even though 'user' is @NonNull, verify at assignment
-     * final @LocalNotNull User verifiedUser = NotNull.verify(user);
+     * final User verifiedUser = NotNull.verify(user);
      * }
      * }</pre>
      *
-     * <h3>Why Not Direct Assignment?</h3>
+     * <p><strong>Why Not Direct Assignment?</strong></p>
      * <p>PMD rules prevent direct assignment from {@code @NonNull} to {@code @LocalNotNull}.
-     * This forces an explicit runtime check, ensuring the local variable is truly non-null.
+     * This forces an explicit runtime check, ensuring the local variable is truly non-null.</p>
      *
      * @param value the supposedly non-null value to verify
      * @param <T> the value type
@@ -333,6 +347,13 @@ public final class NotNull {
      *
      * <p>Same as {@link #verify(Object)} but with a custom error message.
      *
+     * <p><strong>Example Usage</strong></p>
+     * <pre>{@code
+     * public void processUser(@NonNull User user) {
+     * final User verifiedUser = NotNull.verify(user, "User must not be null");
+     * }
+     * }</pre>
+     *
      * @param value the supposedly non-null value to verify
      * @param message the error message if null
      * @param <T> the value type
@@ -355,8 +376,10 @@ public final class NotNull {
         return value;
     }
 
-    /** * LOG-AND-CONTINUE — warn but don't crash (migration / monitoring).
-     * * @param value the potentially null value
+    /**
+     * LOG-AND-CONTINUE — warn but don't crash (migration / monitoring).
+     *
+     * @param value the potentially null value
      * @param defaultValue the non-null fallback
      * @param <T> the value type
      * @return the value, or defaultValue if null
@@ -376,8 +399,10 @@ public final class NotNull {
         return value;
     }
 
-    /** * LOG-AND-CONTINUE — warn with explicit context.
-     * * @param value the potentially null value
+    /**
+     * LOG-AND-CONTINUE — warn with explicit context.
+     *
+     * @param value the potentially null value
      * @param defaultValue the non-null fallback
      * @param context logging context
      * @param <T> the value type
@@ -403,8 +428,10 @@ public final class NotNull {
     // Optional policies (same intent, different input type)
     // =====================================================================================
 
-    /** * GRACEFUL — use default if Optional is empty (or corrupt).
-     * * @param opt the optional to unwrap
+    /**
+     * GRACEFUL — use default if Optional is empty (or corrupt).
+     *
+     * @param opt the optional to unwrap
      * @param defaultValue the non-null fallback
      * @param <T> the value type
      * @return the optional's value or defaultValue
@@ -466,8 +493,10 @@ public final class NotNull {
         return defaultValue;
     }
 
-    /** * FAIL-FAST — throw if Optional is empty (or corrupt).
-     * * @param opt the optional to check
+    /**
+     * FAIL-FAST — throw if Optional is empty (or corrupt).
+     *
+     * @param opt the optional to check
      * @param <T> the value type
      * @return the unwrapped non-null value
      * @throws NullPointerException if opt is null or empty/corrupt
@@ -485,8 +514,10 @@ public final class NotNull {
         return value;
     }
 
-    /** * FAIL-FAST — throw if Optional is empty (or corrupt) with message.
-     * * @param opt the optional to check
+    /**
+     * FAIL-FAST — throw if Optional is empty (or corrupt) with message.
+     *
+     * @param opt the optional to check
      * @param message the exception message
      * @param <T> the value type
      * @return the unwrapped non-null value
@@ -508,8 +539,10 @@ public final class NotNull {
         return value;
     }
 
-    /** * LOG-AND-CONTINUE — warn if Optional is empty (or corrupt).
-     * * @param opt the optional to unwrap
+    /**
+     * LOG-AND-CONTINUE — warn if Optional is empty (or corrupt).
+     *
+     * @param opt the optional to unwrap
      * @param defaultValue the non-null fallback
      * @param <T> the value type
      * @return the optional value, or defaultValue if null/empty
@@ -531,8 +564,10 @@ public final class NotNull {
         return value;
     }
 
-    /** * LOG-AND-CONTINUE — warn with explicit context.
-     * * @param opt the optional to unwrap
+    /**
+     * LOG-AND-CONTINUE — warn with explicit context.
+     *
+     * @param opt the optional to unwrap
      * @param defaultValue the non-null fallback
      * @param context logging context
      * @param <T> the value type
@@ -562,8 +597,10 @@ public final class NotNull {
     // Bridging helpers
     // =====================================================================================
 
-    /** * Convert a nullable value to Optional.
-     * * @param value the potentially null value
+    /**
+     * Convert a nullable value to Optional.
+     *
+     * @param value the potentially null value
      * @param <T> the value type
      * @return an Optional containing the value, or empty if null
      */
@@ -572,8 +609,10 @@ public final class NotNull {
         return Optional.ofNullable(value);
     }
 
-    /** * Convert an Optional to a nullable value (escape hatch).
-     * * @param opt the optional to unwrap
+    /**
+     * Convert an Optional to a nullable value (escape hatch).
+     *
+     * @param opt the optional to unwrap
      * @param <T> the value type
      * @return the value within the Optional, or null
      * @throws NullPointerException if opt is null
