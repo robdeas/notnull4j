@@ -1,0 +1,1 @@
+rootProject.name = "notnull4j-core"
