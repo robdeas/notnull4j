@@ -104,25 +104,41 @@ public final class NotNull {
     // Normalisation helpers (iteration / concatenation safety)
     // =====================================================================================
 
-    /** GRACEFUL — returns an unmodifiable empty list if null. */
+    /** * GRACEFUL — returns an unmodifiable empty list if null.
+     * * @param list the potentially null list
+     * @param <T> the type of elements
+     * @return the provided list if non-null, or {@link List#of()}
+     */
     @NonNull
     public static <T> List<T> listOrEmpty(@Nullable List<T> list) {
         return (list != null) ? list : List.of();
     }
 
-    /** GRACEFUL — returns an unmodifiable empty set if null. */
+    /** * GRACEFUL — returns an unmodifiable empty set if null.
+     * * @param set the potentially null set
+     * @param <T> the type of elements
+     * @return the provided set if non-null, or {@link Set#of()}
+     */
     @NonNull
     public static <T> Set<T> setOrEmpty(@Nullable Set<T> set) {
         return (set != null) ? set : Set.of();
     }
 
-    /** GRACEFUL — returns an unmodifiable empty map if null. */
+    /** * GRACEFUL — returns an unmodifiable empty map if null.
+     * * @param map the potentially null map
+     * @param <K> the type of keys
+     * @param <V> the type of values
+     * @return the provided map if non-null, or {@link Map#of()}
+     */
     @NonNull
     public static <K, V> Map<K, V> mapOrEmpty(@Nullable Map<K, V> map) {
         return (map != null) ? map : Map.of();
     }
 
-    /** GRACEFUL — returns empty string if null. */
+    /** * GRACEFUL — returns empty string if null.
+     * * @param str the potentially null string
+     * @return the provided string if non-null, otherwise an empty string
+     */
     @NonNull
     public static String stringOrEmpty(@Nullable String str) {
         return (str != null) ? str : "";
@@ -132,7 +148,13 @@ public final class NotNull {
     // Nullable value policies
     // =====================================================================================
 
-    /** GRACEFUL — use default if null (common business logic). */
+    /** * GRACEFUL — use default if null (common business logic).
+     * * @param value the potentially null value
+     * @param defaultValue the non-null fallback
+     * @param <T> the value type
+     * @return the value or the default
+     * @throws NullPointerException if defaultValue is null
+     */
     @NonNull
     public static <T> T orDefault(
             @Nullable T value,
@@ -200,6 +222,7 @@ public final class NotNull {
      * @param context description of where this is used (appears in logs)
      * @param <T> the value type
      * @return the value, fallback, or null if both fail
+     * @throws NullPointerException if supplier or context is null
      */
     @Nullable
     public static <T> T orLogGet(
@@ -228,7 +251,12 @@ public final class NotNull {
         }
     }
 
-    /** FAIL-FAST — throw if null (assertions / invariants). */
+    /** * FAIL-FAST — throw if null (assertions / invariants).
+     * * @param value the potentially null value
+     * @param <T> the value type
+     * @return the non-null value
+     * @throws NullPointerException if value is null
+     */
     @NonNull
     public static <T> T orThrow(@Nullable T value) {
         if (value == null) {
@@ -238,7 +266,13 @@ public final class NotNull {
         return value;
     }
 
-    /** FAIL-FAST — throw if null with message. */
+    /** * FAIL-FAST — throw if null with message.
+     * * @param value the potentially null value
+     * @param message the exception message
+     * @param <T> the value type
+     * @return the non-null value
+     * @throws NullPointerException if value is null or if message is null
+     */
     @NonNull
     public static <T> T orThrow(
             @Nullable T value,
@@ -257,46 +291,20 @@ public final class NotNull {
      *
      * <p>Use this when assigning from {@code @NonNull} parameters, fields, or variables
      * to {@code @LocalNotNull} local variables. Even though static analysis says the value
-     * is non-null, this performs a runtime check to defend against:
-     * <ul>
-     *   <li>Reflection abuse that bypasses null-safety</li>
-     *   <li>Serialization/deserialization bugs</li>
-     *   <li>Bugs in third-party libraries</li>
-     *   <li>Raw types bypassing generics</li>
-     * </ul>
+     * is non-null, this performs a runtime check to defend against reflection abuse,
+     * serialization bugs, or raw types.
      *
-     * <p>This is essentially {@link #orThrow(Object)} but with documentation that explains
-     * its specific use case: defensive verification of supposedly non-null values.
-     *
-     * <h2>Example Usage</h2>
+     * <h3>Example Usage</h3>
      * <pre>{@code
      * public void processUser(@NonNull User user) {
-     *     // Even though 'user' is @NonNull, verify at assignment
-     *     final @LocalNotNull User verifiedUser = NotNull.verify(user);
-     *
-     *     // Now guaranteed non-null both statically and at runtime
-     * }
-     *
-     * public void reassignVariable() {
-     *     @LocalNotNull String name = NotNull.orThrowOptional(service.getName());
-     *
-     *     // Later, assign from another @NonNull source
-     *     @NonNull String updatedName = getUpdatedName();
-     *     name = NotNull.verify(updatedName);  // Runtime check before assignment
+     * // Even though 'user' is @NonNull, verify at assignment
+     * final @LocalNotNull User verifiedUser = NotNull.verify(user);
      * }
      * }</pre>
      *
-     * <h2>Why Not Direct Assignment?</h2>
-     * <p>PMD rules prevent direct assignment from {@code @NonNull} to {@code @LocalNotNull}:
-     * <pre>{@code
-     * @NonNull String param = ...;
-     * @LocalNotNull String local = param;  // PMD violation!
-     * @LocalNotNull String local = NotNull.verify(param);  // OK
-     * }</pre>
-     *
-     * <p>This forces an explicit runtime check, ensuring that even if the {@code @NonNull}
-     * contract was violated (via reflection, bugs, etc.), the {@code @LocalNotNull} variable
-     * is truly non-null.
+     * <h3>Why Not Direct Assignment?</h3>
+     * <p>PMD rules prevent direct assignment from {@code @NonNull} to {@code @LocalNotNull}.
+     * This forces an explicit runtime check, ensuring the local variable is truly non-null.
      *
      * @param value the supposedly non-null value to verify
      * @param <T> the value type
@@ -304,6 +312,7 @@ public final class NotNull {
      * @throws NullPointerException if the value is null (contract violation)
      */
     @NonNull
+    @SuppressWarnings("PMD.SillyCheck")
     public static <T> T verify(@NonNull T value) {
         if (value == null) {
             log.error("NotNull.verify() received null (contract violation!){}",
@@ -328,9 +337,10 @@ public final class NotNull {
      * @param message the error message if null
      * @param <T> the value type
      * @return the verified non-null value
-     * @throws NullPointerException if the value is null
+     * @throws NullPointerException if the value is null or message is null
      */
     @NonNull
+    @SuppressWarnings("PMD.SillyCheck")
     public static <T> T verify(@NonNull T value, @NonNull String message) {
         Objects.requireNonNull(message, "message");
         if (value == null) {
@@ -345,7 +355,13 @@ public final class NotNull {
         return value;
     }
 
-    /** LOG-AND-CONTINUE — warn but don't crash (migration / monitoring). */
+    /** * LOG-AND-CONTINUE — warn but don't crash (migration / monitoring).
+     * * @param value the potentially null value
+     * @param defaultValue the non-null fallback
+     * @param <T> the value type
+     * @return the value, or defaultValue if null
+     * @throws NullPointerException if defaultValue is null
+     */
     @NonNull
     public static <T> T orLog(
             @Nullable T value,
@@ -360,7 +376,14 @@ public final class NotNull {
         return value;
     }
 
-    /** LOG-AND-CONTINUE — warn with explicit context. */
+    /** * LOG-AND-CONTINUE — warn with explicit context.
+     * * @param value the potentially null value
+     * @param defaultValue the non-null fallback
+     * @param context logging context
+     * @param <T> the value type
+     * @return the value, or defaultValue if null
+     * @throws NullPointerException if defaultValue or context is null
+     */
     @NonNull
     public static <T> T orLog(
             @Nullable T value,
@@ -378,13 +401,15 @@ public final class NotNull {
 
     // =====================================================================================
     // Optional policies (same intent, different input type)
-    //
-    // Optional must not contain null by contract, but corrupt Optionals can appear
-    // via raw types, reflection, or deserialization. We normalize:
-    //   empty OR corrupt -> null (absent)
     // =====================================================================================
 
-    /** GRACEFUL — use default if Optional is empty (or corrupt). */
+    /** * GRACEFUL — use default if Optional is empty (or corrupt).
+     * * @param opt the optional to unwrap
+     * @param defaultValue the non-null fallback
+     * @param <T> the value type
+     * @return the optional's value or defaultValue
+     * @throws NullPointerException if opt or defaultValue is null
+     */
     @NonNull
     public static <T> T orDefaultOptional(
             @NonNull Optional<? extends T> opt,
@@ -406,7 +431,7 @@ public final class NotNull {
      * @param defaultSupplier the non-null supplier providing a fallback
      * @param <T> the value type
      * @return the optional value or supplier result, guaranteed non-null
-     * @throws NullPointerException if supplier is null, returns null, or throws
+     * @throws NullPointerException if opt or supplier is null, or if supplier returns null
      */
     @NonNull
     public static <T> T orGetOptional(
@@ -441,7 +466,12 @@ public final class NotNull {
         return defaultValue;
     }
 
-    /** FAIL-FAST — throw if Optional is empty (or corrupt). */
+    /** * FAIL-FAST — throw if Optional is empty (or corrupt).
+     * * @param opt the optional to check
+     * @param <T> the value type
+     * @return the unwrapped non-null value
+     * @throws NullPointerException if opt is null or empty/corrupt
+     */
     @NonNull
     public static <T> T orThrowOptional(@NonNull Optional<? extends T> opt) {
         Objects.requireNonNull(opt, "opt");
@@ -455,7 +485,13 @@ public final class NotNull {
         return value;
     }
 
-    /** FAIL-FAST — throw if Optional is empty (or corrupt) with message. */
+    /** * FAIL-FAST — throw if Optional is empty (or corrupt) with message.
+     * * @param opt the optional to check
+     * @param message the exception message
+     * @param <T> the value type
+     * @return the unwrapped non-null value
+     * @throws NullPointerException if opt, message, or value is null
+     */
     @NonNull
     public static <T> T orThrowOptional(
             @NonNull Optional<? extends T> opt,
@@ -472,7 +508,13 @@ public final class NotNull {
         return value;
     }
 
-    /** LOG-AND-CONTINUE — warn if Optional is empty (or corrupt). */
+    /** * LOG-AND-CONTINUE — warn if Optional is empty (or corrupt).
+     * * @param opt the optional to unwrap
+     * @param defaultValue the non-null fallback
+     * @param <T> the value type
+     * @return the optional value, or defaultValue if null/empty
+     * @throws NullPointerException if opt or defaultValue is null
+     */
     @NonNull
     public static <T> T orLogOptional(
             @NonNull Optional<? extends T> opt,
@@ -489,7 +531,14 @@ public final class NotNull {
         return value;
     }
 
-    /** LOG-AND-CONTINUE — warn with explicit context. */
+    /** * LOG-AND-CONTINUE — warn with explicit context.
+     * * @param opt the optional to unwrap
+     * @param defaultValue the non-null fallback
+     * @param context logging context
+     * @param <T> the value type
+     * @return the optional value, or defaultValue if null/empty
+     * @throws NullPointerException if opt, defaultValue, or context is null
+     */
     @NonNull
     public static <T> T orLogOptional(
             @NonNull Optional<? extends T> opt,
@@ -513,13 +562,22 @@ public final class NotNull {
     // Bridging helpers
     // =====================================================================================
 
-    /** Convert a nullable value to Optional. */
+    /** * Convert a nullable value to Optional.
+     * * @param value the potentially null value
+     * @param <T> the value type
+     * @return an Optional containing the value, or empty if null
+     */
     @NonNull
     public static <T> Optional<T> optional(@Nullable T value) {
         return Optional.ofNullable(value);
     }
 
-    /** Convert an Optional to a nullable value (escape hatch). */
+    /** * Convert an Optional to a nullable value (escape hatch).
+     * * @param opt the optional to unwrap
+     * @param <T> the value type
+     * @return the value within the Optional, or null
+     * @throws NullPointerException if opt is null
+     */
     @Nullable
     public static <T> T orNull(@NonNull Optional<? extends T> opt) {
         Objects.requireNonNull(opt, "opt");
@@ -533,9 +591,9 @@ public final class NotNull {
     /**
      * Normalize Optional into a nullable value:
      * <ul>
-     *   <li>empty → null</li>
-     *   <li>present → value</li>
-     *   <li>corrupt Optional → null (logged)</li>
+     * <li>empty → null</li>
+     * <li>present → value</li>
+     * <li>corrupt Optional → null (logged)</li>
      * </ul>
      */
     @Nullable
@@ -564,9 +622,9 @@ public final class NotNull {
     /**
      * Best-effort caller detection:
      * <ul>
-     *   <li>returns null if disabled via property</li>
-     *   <li>returns null if stack walking is unavailable (e.g. native images)</li>
-     *   <li>never affects correctness</li>
+     * <li>returns null if disabled via property</li>
+     * <li>returns null if stack walking is unavailable (e.g. native images)</li>
+     * <li>never affects correctness</li>
      * </ul>
      */
     @Nullable
